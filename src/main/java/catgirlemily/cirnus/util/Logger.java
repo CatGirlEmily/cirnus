@@ -4,13 +4,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Minimalistyczny logger z kolorami ANSI.
- * Nie potrzebujemy Log4j ani SLF4J na tym etapie.
+ * Minimalist logger with ANSI colors.
  */
 public class Logger {
+
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    // Kody kolorów ANSI
     private static final String RESET  = "\u001B[0m";
     private static final String GRAY   = "\u001B[90m";
     private static final String GREEN  = "\u001B[32m";
@@ -35,7 +34,7 @@ public class Logger {
     }
 
     public static void error(String msg, Throwable t) {
-        error(msg + " – " + t.getMessage());
+        error(msg + " - " + t.getMessage());
         if (ServerConfig.DEBUG_PACKETS) t.printStackTrace();
     }
 

@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group   = 'catgirlemily.cirnus'
+version = '0.1.0'
+
+// Java 21+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+application {
+    mainClass = 'catgirlemily.cirnus.Main'
+}
+
+// Fat jar – launched by: java -jar build/libs/cirnus.jar
+jar {
+    archiveFileName = 'cirnus.jar'
+    manifest {
+        attributes 'Main-Class': 'catgirlemily.cirnus.Main'
+    }
+    from configurations.runtimeClasspath.collect {
+        it.isDirectory() ? it : zipTree(it)
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+//   implementation 'com.google.code.gson:gson:2.11.0'
+dependencies {}

@@ -5,6 +5,7 @@ import catgirlemily.cirnus.protocol.PacketBuffer;
 import catgirlemily.cirnus.protocol.packet.client.*;
 import catgirlemily.cirnus.protocol.packet.server.*;
 import catgirlemily.cirnus.util.Logger;
+import catgirlemily.cirnus.util.RegistryData;
 import catgirlemily.cirnus.util.ServerConfig;
 
 import java.io.*;
@@ -101,7 +102,9 @@ public class ClientHandler implements Runnable {
     private void onConfiguration(int packetId, byte[] payload, OutputStream out) throws IOException {
         switch (packetId) {
             case 0x07 -> {
-                new UpdateTagsPacket().send(out);
+                out.write(RegistryData.registries);
+                out.write(RegistryData.tags);
+                out.flush();
                 new FinishConfigurationPacket().send(out);
             }
             case 0x03 -> {

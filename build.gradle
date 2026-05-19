@@ -13,14 +13,14 @@ java {
 }
 
 application {
-    mainClass = 'catgirlemily.cirnus.Main'
+    mainClass = 'catgirlemily.cirnus.MinecraftServer'
 }
 
 // Fat jar – launched by: java -jar build/libs/cirnus.jar
 jar {
     archiveFileName = 'cirnus.jar'
     manifest {
-        attributes 'Main-Class': 'catgirlemily.cirnus.Main'
+        attributes 'Main-Class': 'catgirlemily.cirnus.MinecraftServer'
     }
     from configurations.runtimeClasspath.collect {
         it.isDirectory() ? it : zipTree(it)

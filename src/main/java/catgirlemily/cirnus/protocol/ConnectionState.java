@@ -13,5 +13,6 @@ public enum ConnectionState {
     HANDSHAKE,  // hello from client
     STATUS,     // ping / server list
     LOGIN,      // player login
+    CONFIGURATION, // synchronize settings iirc
     PLAY        // actual game (not implemented yet)
 }

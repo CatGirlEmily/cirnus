@@ -2,6 +2,7 @@ package catgirlemily.cirnus.protocol;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 /**
  * Wrapper on byte streams with methods for reading/writing
@@ -86,6 +87,67 @@ public class PacketBuffer {
 
     public static void writeLong(OutputStream out, long value) throws IOException {
         for (int i = 7; i >= 0; i--) out.write((int) (value >> (8 * i)) & 0xFF);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Boolean (1 byte i guess?)
+    // ---------------------------------------------------------------------------
+
+    public static boolean readBoolean(InputStream in) throws IOException {
+        return in.read() == 1;
+    }
+
+    public static void writeBoolean(OutputStream out, boolean value) throws IOException {
+        out.write(value ? 1 : 0);
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // Int
+    // -------------------------------------------------------------------------
+    
+    public static void writeInt(OutputStream out, int value) throws IOException {
+        out.write((value >> 24) & 0xFF);
+        out.write((value >> 16) & 0xFF);
+        out.write((value >> 8) & 0xFF);
+        out.write(value & 0xFF);
+    }
+
+    // -------------------------------------------------------------------------
+    // Byte
+    // -------------------------------------------------------------------------
+    
+    public static void writeByte(OutputStream out, int value) throws IOException {
+        out.write(value & 0xFF);
+    }
+
+    // -------------------------------------------------------------------------
+    // Float
+    // -------------------------------------------------------------------------
+
+    public static void writeFloat(OutputStream out, float value) throws IOException {
+        writeInt(out, Float.floatToIntBits(value));
+    }
+    
+    // -------------------------------------------------------------------------
+    // Double
+    // -------------------------------------------------------------------------
+    
+    public static void writeDouble(OutputStream out, double value) throws IOException {
+        writeLong(out, Double.doubleToLongBits(value));
+    }
+
+    // --------------------------------------------------------------------------
+    // UUID (2x Long)
+    // --------------------------------------------------------------------------
+    
+    public static UUID readUUID(InputStream in) throws IOException {
+        return new UUID(readLong(in), readLong(in));
+    }
+
+    public static void writeUUID(OutputStream out, UUID uuid) throws IOException {
+        writeLong(out, uuid.getMostSignificantBits());
+        writeLong(out, uuid.getLeastSignificantBits());
     }
 
     // -------------------------------------------------------------------------

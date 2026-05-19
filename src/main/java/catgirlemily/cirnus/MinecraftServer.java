@@ -2,7 +2,7 @@ package catgirlemily.cirnus;
 
 import catgirlemily.cirnus.network.Server;
 
-public class Main {
+public class MinecraftServer {
     public static void main(String[] args) throws Exception {
         int port = 25565;
         if (args.length > 0) {

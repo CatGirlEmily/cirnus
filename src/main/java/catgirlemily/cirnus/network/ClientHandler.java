@@ -2,13 +2,14 @@ package catgirlemily.cirnus.network;
 
 import catgirlemily.cirnus.protocol.ConnectionState;
 import catgirlemily.cirnus.protocol.PacketBuffer;
-import catgirlemily.cirnus.protocol.packet.s2c.*;
-import catgirlemily.cirnus.protocol.packet.c2s.*;
+import catgirlemily.cirnus.protocol.packet.client.*;
+import catgirlemily.cirnus.protocol.packet.server.*;
 import catgirlemily.cirnus.util.Logger;
 import catgirlemily.cirnus.util.ServerConfig;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientHandler implements Runnable {
@@ -51,6 +52,7 @@ public class ClientHandler implements Runnable {
         switch (state) {
             case HANDSHAKE -> onHandshake(packetId, payload);
             case STATUS -> onStatus(packetId, payload, out);
+            case CONFIGURATION -> onConfiguration(packetId, payload, out);
             case LOGIN -> onLogin(packetId, payload, out);
         default-> Logger.warn("Unknown state: " + state);
         }
@@ -92,17 +94,45 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    // ------------------------------------------------------------------------
+    // CONFIGURATION
+    // ------------------------------------------------------------------------
+
+    private void onConfiguration(int packetId, byte[] payload, OutputStream out) throws IOException {
+        switch (packetId) {
+            case 0x07 -> {
+                new UpdateTagsPacket().send(out);
+                new FinishConfigurationPacket().send(out);
+            }
+            case 0x03 -> {
+                // ServerboundFinishConfiguration
+                Logger.debug("Configuration finished, switching to PLAY");
+                state = ConnectionState.PLAY;
+                new LoginPlayPacket(1).send(out);
+                new GameEventPacket(GameEventPacket.LEVEL_CHUNKS_LOAD_START, 0).send(out);
+                new PlayerPositionPacket(0, 64, 0, 0, 0).send(out);
+            }
+        default -> Logger.debug("Ignored CONFIGURATION packet: 0x%02X".formatted(packetId));
+        }
+    }
+
     // -------------------------------------------------------------------------
     // LOGIN
     // -------------------------------------------------------------------------
 
     private void onLogin(int packetId, byte[] payload, OutputStream out) throws IOException {
-        if (packetId != 0x00) {
-            Logger.warn("Unknown packet LOGIN: 0x%02X".formatted(packetId));
-            return;
+        switch (packetId) {
+            case 0x00 -> {
+                LoginStartPacket packet = LoginStartPacket.read(payload);
+                Logger.connection(address, "Login attempt: " + packet.username);
+                UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + packet.username).getBytes());
+                new LoginSuccessPacket(uuid, packet.username).send(out);
+            }
+            case 0x03 -> {
+                Logger.debug("Login acknowledged!");
+                state = ConnectionState.CONFIGURATION;
+                new SelectKnownPacksPacket().send(out);
+            }
         }
-        LoginStartPacket packet = LoginStartPacket.read(payload);
-        Logger.connection(address, "Login attempt: " + packet.username);
-        new LoginDisconnectPacket("phase play yet to be added").send(out);
     }
 }

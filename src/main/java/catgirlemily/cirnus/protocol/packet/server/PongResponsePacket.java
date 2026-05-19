@@ -1,4 +1,4 @@
-package catgirlemily.cirnus.protocol.packet.s2c;
+package catgirlemily.cirnus.protocol.packet.server;
 
 import catgirlemily.cirnus.protocol.PacketBuffer;
 

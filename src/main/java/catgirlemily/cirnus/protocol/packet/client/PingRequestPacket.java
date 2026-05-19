@@ -1,4 +1,4 @@
-package catgirlemily.cirnus.protocol.packet.c2s;
+package catgirlemily.cirnus.protocol.packet.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

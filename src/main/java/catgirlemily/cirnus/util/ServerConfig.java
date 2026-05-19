@@ -12,7 +12,7 @@ public class ServerConfig {
     public static final String FAVICON = null;
 
     // mid level
-    public static final boolean DEBUG_PACKETS = false;
+    public static final boolean DEBUG_PACKETS = true;
 
     // very low level
     public static final boolean NAGLE_ALGORITHM = false;
